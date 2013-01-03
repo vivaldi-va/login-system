@@ -1,0 +1,79 @@
+
+			
+			$q_list = 'SELECT
+				'.TBL_SHOPPING_LISTS.'.id,
+				'.TBL_SHOPPING_LISTS.'.userID,
+				'.TBL_SHOPPING_LIST_PRODUCTS.'.id AS listItemID,
+				'.TBL_SHOPPING_LIST_PRODUCTS.'.shoppingListID,
+				'.TBL_SHOPPING_LIST_PRODUCTS.'.ProductID,
+				'.TBL_SHOPPING_LIST_PRODUCTS.'.quantity AS quantity,
+				'.TBL_PRODUCTS.'.id AS productID,
+				'.TBL_PRODUCTS.'.name AS productName,
+				min('.TBL_PRICES.'.created)
+				FROM
+				'.TBL_USERS.',
+				'.TBL_SHOPPING_LISTS.',
+				'.TBL_SHOPPING_LIST_PRODUCTS.',
+				'.TBL_PRODUCTS.',
+				'.TBL_PRICES.',
+				'.TBL_SHOPS.'
+				WHERE
+				'.$userID.' = '.TBL_SHOPPING_LISTS.'.userID AND
+				'.$userID.' = '.TBL_USERS.'.id AND
+				'.$listID.' = '.TBL_SHOPPING_LIST_PRODUCTS.'.shoppinglistID AND
+				'.TBL_PRODUCTS.'.id = '.TBL_SHOPPING_LIST_PRODUCTS.'.productID AND '.
+				TBL_PRICES.'.productID = '.TBL_PRODUCTS.'.id AND '.
+				TBL_PRICES.'.shopID = '.TBL_SHOPS.'.id AND '.
+				$q_chains_part.
+				' GROUP BY '.TBL_PRICES.'.id';
+			
+			if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p><code>$userID, $listID</code></p>\n";}
+			if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Running query to return sorted shopping lists products @ database.php</p>\n";}
+			if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p><code>$q_list</code></p>\n";}
+			
+			$result = mysql_query($q_list);
+			if(!$result || mysql_num_rows($result) == 0)
+			{
+				$_SESSION['debug_info'] .= "<p>No products found for list #$listID. Returned rows are 0, or query failed.<br>
+				There are either no prices in the database for the list items, or errors in sql.</p>\n";
+				return false;
+			}
+			//$dbArray = mysql_fetch_assoc($result);
+			if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Products found, continuing with sort</p>\n";}
+	
+	
+			/*
+			 * Loop through the found products and add them to respective arrays
+			*
+			*/
+			$sortedListArray = array();
+			$shopPriceTotals = array();
+			$pricePerProductArray = array();
+			$pricePerShopArray = array();
+			
+			/*
+			 * Declare variables for shop totals and list string
+			 */
+			foreach($definedStoreIdArray AS $shopID => $value)
+			{
+				$shopPriceTotals[$shopID] = 0;
+				if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Declaring blank strings for store# $shopID</p>\n";}
+				$sortedListArray[$shopID] = "";
+			}
+			/*
+			 * For each of the prices, create an array that has the shop ID and the price
+			*/
+			$priceShopArray = array();
+			$shopTotals = array();
+			/*
+			 * Define variables in the array
+			*/
+			foreach($definedStoreIdArray AS $shopID => $value)
+			{
+				/*
+				 * Define variables in the array
+				*/
+				$shopTotals[$shopID] = 0;
+			}
+			$shopTotals[$shopID] = 0;
+			

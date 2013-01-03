@@ -1,0 +1,341 @@
+/* HTML5 ? Boilerplate
+ * ==|== normalize ==========================================================
+ */
+
+article, aside, details, figcaption, figure, footer, header, hgroup, nav, section { display: block; }
+audio, canvas, video { display: inline-block; *display: inline; *zoom: 1; }
+audio:not([controls]) { display: none; }
+[hidden] { display: none; }
+
+html { font-size: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+body { margin: 0; font-size: 16px; line-height: 1.5; }
+body, button, input, select, textarea { font-family: sans-serif; color: #222; }
+
+::-moz-selection { background: #fe57a1; color: #fff; text-shadow: none; }
+::selection { background: #fe57a1; color: #fff; text-shadow: none; }
+
+a { color: #00e; }
+a:visited { color: #551a8b; }
+a:hover { color: #06e; }
+a:focus { outline: thin dotted; }
+a:hover, a:active { outline: 0; }
+
+abbr[title] { border-bottom: 1px dotted; }
+b, strong { font-weight: bold; }
+blockquote { margin: 1em 40px; }
+dfn { font-style: italic; }
+hr { display: block; height: 1px; border: 0; border-top: 1px solid #ccc; margin: 1em 0; padding: 0; }
+ins { background: #ff9; color: #000; text-decoration: none; }
+mark { background: #ff0; color: #000; font-style: italic; font-weight: bold; }
+pre, code, kbd, samp { font-family: monospace, monospace; _font-family: 'courier new', monospace; font-size: 1em; }
+pre { white-space: pre; white-space: pre-wrap; word-wrap: break-word; }
+q { quotes: none; }
+q:before, q:after { content: ""; content: none; }
+small { font-size: 85%; }
+sub, sup { font-size: 75%; line-height: 0; position: relative; vertical-align: baseline; }
+sup { top: -0.5em; }
+sub { bottom: -0.25em; }
+ul, ol { margin: 1em 0; padding: 0 0 0 40px; }
+dd { margin: 0 0 0 3em; }
+nav ul, nav ol { list-style: none; list-style-image: none; margin: 0; padding: 0; }
+img { border: 0; -ms-interpolation-mode: bicubic; vertical-align: middle; }
+img{font-style: italic; color: #7f7f7f;}/* style for img alt="" text if image doesnt load */
+img::after{content:" (image not loaded)";}/* appends text to the end of the alt text, if the image were not to load */
+svg:not(:root) { overflow: hidden; }
+figure { margin: 0; }
+
+form { margin: 0; }
+fieldset { border: 0; margin: 0; padding: 0; }
+label { cursor: pointer; }
+legend { border: 0; *margin-left: -7px; padding: 0; }
+button, input, select, textarea { font-size: 100%; margin: 0; vertical-align: baseline; *vertical-align: middle; }
+button, input { line-height: normal; *overflow: visible; }
+table button, table input { *overflow: auto; }
+button, input[type="button"], input[type="reset"], input[type="submit"] { cursor: pointer; -webkit-appearance: button; }
+input[type="checkbox"], input[type="radio"] { box-sizing: border-box; }
+input[type="search"] { -webkit-appearance: textfield; -moz-box-sizing: content-box; -webkit-box-sizing: content-box; box-sizing: content-box; }
+input[type="search"]::-webkit-search-decoration { -webkit-appearance: none; }
+button::-moz-focus-inner, input::-moz-focus-inner { border: 0; padding: 0; }
+textarea { overflow: auto; vertical-align: top; resize: vertical; }
+input:valid, textarea:valid {  }
+input:invalid, textarea:invalid { background-color: #f0dddd; }
+
+table { border-collapse: collapse; border-spacing: 0; }
+td { vertical-align: top; }
+
+
+/*  ==|== primary styles =====================================================
+	MOBILE FIRST STYLES
+	Author: 
+	========================================================================== */
+
+
+/* ==|== tags =============================================================== */
+
+html
+{
+	font-size: 8px;
+}
+
+body
+{
+	background: #fff;
+}
+
+a,
+a:link,
+a:visited
+{
+	color: inherit;
+	text-decoration: underline;
+}
+
+a:hover,
+a:active,
+a:focus
+{
+	color: #22599B;
+}
+
+
+
+
+/* ==|== structure ========================================================== */
+
+/* GRID */
+.row-fluid [class*="span"]
+{
+	width: 100%;
+	display:inline-block;
+}
+.row-fluid .span12 {
+width: 100%;
+*width: 99.94680851063829%;
+}
+.row-fluid .span11 {
+width: 100%;
+*width: 99.94680851063829%;
+}
+.row-fluid .span10 {
+width: 100%;
+*width: 99.94680851063829%;
+}
+.row-fluid .span9 {
+width: 100%;
+*width: 99.94680851063829%;
+}
+.row-fluid .span8 {
+width: 100%;
+*width: 99.94680851063829%;
+}
+.row-fluid .span7 {
+width: 100%;
+*width: 99.94680851063829%;
+}
+.row-fluid .span6 {
+width: 100%;
+*width: 99.94680851063829%;
+}
+.row-fluid .span5 {
+width: 100%;
+*width: 99.94680851063829%;
+}
+.row-fluid .span4 {
+width: 100%;
+*width: 99.94680851063829%;
+}
+.row-fluid .span3 {
+width: 100%;
+*width: 99.94680851063829%;
+}
+.row-fluid .span2 {
+width: 100%;
+*width: 99.94680851063829%;
+}
+.row-fluid .span1 {
+width: 100%;
+*width: 99.94680851063829%;
+}
+
+.wrapper,
+.wrapper > *
+{
+	width: 100%;
+}
+
+.wrapper > *
+{
+	float: left;
+	padding: 0 1rem;
+	
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+
+
+
+
+/* ==|== typography ========================================================== */
+
+body
+{
+	font: 1.5rem/1.5 sans-serif;
+	color: #333;
+}
+
+a,
+a:link,
+a:visited
+{
+	color: inherit;
+	text-decoration: underline;
+}
+
+a:hover,
+a:active,
+a:focus
+{
+	color: #22599B;
+}
+
+.header-bar
+{
+	color: #fff;
+}
+
+.app-title
+{
+	font-size: 1.5em;
+	font-weight: 600;
+	text-transform: capitalize;
+	word-spacing: -0.3em;
+}
+
+
+/* ==|== header ============================================================= */
+
+.header-bar
+{
+	background: #22599B;
+	height: 40px;
+}
+
+.header-bar .app-title
+{
+	float: left;
+	margin: 0;
+	line-height: 40px;
+}
+
+.header-bar .user-info
+{
+	float: right;
+	position: relative;
+	line-height: 40px;
+	padding: 0 45px 0 0;
+}
+
+.header-bar .user-dropdown-button
+{
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 40px;
+	height: 40px;
+	
+	background: #fff;
+}
+
+.header-bar .user-dropdown
+{
+	position: absolute;
+	bottom: 0;
+	right: 0;
+}
+
+/* ==|== body =============================================================== */
+
+
+.context-bar
+{
+	height: 45px;
+	background: #333;
+}
+
+.search-results,
+.search-result
+{
+	float: left;
+	width: 100%;
+}
+
+.search-results .search-result
+{
+	height: 45px;
+	padding: 0 1rem 0 0;
+	border-bottom: 1px solid #ddd;
+	font-size: 1.2em;
+	
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.search-results .search-result:nth-of-type(even)
+{
+	background: #f7f7f7;
+}
+
+.search-results .search-result .search-result-price
+{
+	font-weight: 600;
+}
+
+
+.search-results .search-result .search-result-price {
+    background: none repeat scroll 0 0 #22599B;
+    color: #FFFFFF;
+    float: left;
+    height: 45px;
+    margin: 0 1rem 0 0;
+    min-width: 45px;
+    padding: 0 1em;
+}
+/* ==|== footer ============================================================= */
+
+
+
+
+/* ==|== structural classes ================================================= */
+.full{width:100%;}
+.half{width:50%;}
+.one_third{width: 33.3%;}
+.two_thirds{width: 66.6%;}
+
+.left{float: left;}
+.right{float: right;}
+.center,.centre{margin:0 auto;}
+.nofloat{float: none;}
+.border{float:left;width:100%;height:2px;background:url(./images/border.png) repeat-x left top;}
+
+/* ==|== styling classes ==================================================== */
+/* colour */
+.blue{color: #22599B; font: inherit;}
+/* typographical */
+.upper-case{text-transform: uppercase;}
+.smallcaps{font-variant: small-caps;}
+.dropcap{font-size: 3.5em; line-height: 1em; margin: 0 0.3em 0 0;}
+
+
+/* ==|== non-semantic helper classes ======================================== */
+.ir { display: block; border: 0; text-indent: -999em; overflow: hidden; background-color: transparent; background-repeat: no-repeat; text-align: left; direction: ltr; }
+.ir br { display: none; }
+.hidden { display: none !important; visibility: hidden; }
+.visuallyhidden { border: 0; clip: rect(0 0 0 0); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px; }
+.visuallyhidden.focusable:active, .visuallyhidden.focusable:focus { clip: auto; height: auto; margin: 0; overflow: visible; position: static; width: auto; }
+.invisible { visibility: hidden; }
+.clearfix:before, .clearfix:after { content: ""; display: table; }
+.clearfix:after { clear: both; }
+.clearfix { zoom: 1; }

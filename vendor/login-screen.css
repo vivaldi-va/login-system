@@ -1,0 +1,115 @@
+body
+{
+	background: #22599B;
+	color: #fff;
+}
+
+a:hover,
+a:active,
+a:focus
+{
+	color: #B6CFEF;
+}
+
+button:hover,
+button:active,
+button:focus
+{
+	background: #B6CFEF;
+}
+
+.login-screen
+{
+	position: absolute;
+	top: 25%;
+	width: 100%;
+}
+
+.login-screen .login-logo
+{
+	float: none;
+	width: 128px;
+	height: 128px;
+	margin: 0 auto;
+}
+
+
+.login-screen .login-form
+{
+	margin-top: 4rem;
+}
+
+.login-screen .login-form,
+.login-screen .login-form input,
+.login-screen .login-form button
+{
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.login-screen .login-form input,
+.login-screen .login-form button
+{
+	display: block;
+	width: 100%;
+	min-height: 35px;
+	padding: 0 1em;
+}
+
+.login-screen .login-form .login-input
+{
+	
+	
+	border-top: 1px solid #092D59;
+	border-right: 1px solid #092D59;
+	border-left: 1px solid #092D59;	
+	border-bottom: none;
+}
+
+.login-screen .login-form .login-input + .login-input
+{
+	border-top: 1px solid #ddd;
+} 
+
+.login-screen .login-form .login-input::last-of-type
+{
+	border-bottom: 1px solid #092D59;
+}
+
+
+.login-screen .login-form .checkbox-label
+{
+	float: right;
+	height: 20px;
+	line-height: 20px;
+}
+
+.login-screen .login-form input[type="checkbox"]
+{
+	float: left;
+    width: auto;
+    min-height: 20px;
+    margin: 0 1rem 0 0;
+    padding: 0;
+} 
+
+.login-forgot-pass
+{
+	float: left;
+	
+}
+
+.login-screen .login-form button
+{
+	margin: 4rem 0 0;
+	background: #144581;
+    border: 1px solid #092D59;
+    color: #FFFFFF;
+    
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    -o-border-radius: 2px;
+    border-radius: 2px;
+}
+
