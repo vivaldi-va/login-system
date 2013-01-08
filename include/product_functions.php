@@ -236,16 +236,17 @@
 			foreach($sortLocation AS $shopID => $chainName)
 			{
 				// Shop's array to hold prices and info
-				$sortedArray[$shopID] = array();
-				$sortedArray[$shopID]['total'] = 0;
+				$sortedArray['shops'][$shopID] = array();
+				$sortedArray['shops'][$shopID]['attributes']['chainName'] = $chainName;
+				$sortedArray['shops'][$shopID]['attributes']['total'] = 0;
 			}
 			
 			// Sub-array for products that have no price
 			$sortedArray['noprice'] = array();
 			
 			// Sum total of the sorted list
-			$sortedArray['listtotal'] = 0;
-			$sortedArray['totalsaved'] = 0;
+			$sortedArray['attributes']['listtotal'] = 0;
+			$sortedArray['attributes']['totalsaved'] = 0;
 			
 			
 			foreach($saved AS $listItemID => $array)
@@ -256,11 +257,10 @@
 				}
 				else
 				{
-					$sortedArray[$array['minPrice']['shopID']][$listItemID] = array("name" => $array['name'], "brand" => $array['brand'], "quantity" => $array['quantity'], "price" => $array['minPrice']['price'], "saved" => $array['savings']);
-					$sortedArray[$array['minPrice']['shopID']]['total'] += $array['minPrice']['price'];
-					$sortedArray['listtotal'] += $array['minPrice']['price'];
-					$sortedArray['totalsaved'] += $array['savings'];
-					
+					$sortedArray['shops'][$array['minPrice']['shopID']]['listItems'][$listItemID] = array("name" => $array['name'], "brand" => $array['brand'], "quantity" => $array['quantity'], "price" => $array['minPrice']['price'], "saved" => $array['savings']);
+					$sortedArray['shops'][$array['minPrice']['shopID']]['attributes']['total'] += $array['minPrice']['price'];
+					$sortedArray['attributes']['listtotal'] += $array['minPrice']['price'];
+					$sortedArray['attributes']['totalsaved'] += $array['savings'];
 				}
 			}
 			
