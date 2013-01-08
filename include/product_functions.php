@@ -352,7 +352,8 @@
 				{
 					if(!empty($array['prices']))
 					{
-						$savingsArray[$array['listItemID']]['minPrice'] = $array['prices'][0];
+						$minPriceKey = array_keys($array['prices'],min($array['prices']));
+						$savingsArray[$array['listItemID']]['minPrice'] = array("shopID" => $minPriceKey[0], "price" => min($array['prices']));
 						$savingsArray[$array['listItemID']]['savings'] = 0;
 					}
 					else

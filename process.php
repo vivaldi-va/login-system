@@ -138,6 +138,11 @@ class Process
 		{
 			$this->procUpdateProduct();
 		}
+		// Sort location has been changed
+		elseif(isset($_POST['subsortlocation']))
+		{
+			$this->updateSortLocation();
+		}
 		/**
 		 * The only other reason user should be directed here
 		 * is if he wants to logout, which means user is
@@ -218,12 +223,15 @@ class Process
 	 */
 	function procRegister(){
 		global $session, $form;
+		
+		if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Registering new user @ process.php</p>\n";}
+		
 		/* Convert username to all lowercase (by option) */
 		//if(ALL_LOWERCASE){
 		$_POST['email'] = strtolower($_POST['email']);
 		//}
 		/* Registration attempt */
-		$retval = $session->register($_POST['email'], $_POST['pass'], $_POST['name']);
+		$retval = $session->register($_POST['email'], $_POST['password1'], $_POST['password2'], $_POST['name']);
 
 		/* Registration Successful */
 		if($retval == 0){
@@ -460,7 +468,7 @@ class Process
 	function procBrandSearch()
 	{
 		global $product_functions;
-		echo $product_functions->brandName($_GET['brandString']);
+		echo stripslashes($product_functions->brandName($_GET['brandString']));
 	}
 	
 	
@@ -590,6 +598,11 @@ class Process
 		}
 	}
 	
+	function updateSortLocation()
+	{
+		if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Sort location set to " . $_POST['sortLocation'] . " </p>\n";}
+		$_SESSION['sortLocation'] = $_POST['sortLocation'];
+	}
 	
 	
 	

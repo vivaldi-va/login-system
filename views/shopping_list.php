@@ -8,8 +8,11 @@
 <header class="dashboard-context-bar">
 	<!-- context-sensitive buttons for the dashboard -->
 	
-	<form class="form-horizontal sort-list">
-	<button class="btn btn-primary sort-list-submit" type="submit">Sort List!</button>
+	<form class="form-horizontal sort-list" method="GET" action="index.php">
+		<input type="hidden" name="page" value="sort">
+		<input type="hidden" value="<?php echo $_SESSION['sortLocation'];?>" name="location" class="sort-location-val">
+		<!-- <input type="hidden" value="<?php echo $_SESSION['sortLocation'];?>" name="location" class="sort-location-val">  -->
+		<button class="btn btn-primary sort-list-submit" type="submit">Sort List!</button>
 	</form>
 	
 	<div class="toolbar-product-search toolbar-set">

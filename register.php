@@ -34,6 +34,9 @@ if(!$session->logged_in)
 		
 		<label for="reg-password2">repeat password</label>
 		<input type="password" id="reg-password2" name="reg-password2" class="input">
+		
+		<input type="hidden" value="1" name="subjoin">
+		<button type="submit" class="btn btn-primary">create account</button>
 	</form>
 <?php 	
 }

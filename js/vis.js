@@ -105,17 +105,19 @@ $(document).ready(function(){
 		
 	});*/
 	
-	$(".sort-list").submit(function(event){
-		event.preventDefault();
-		var location = $("#primary-location").val();
+	$("#primary-location").keyup(function(){
+		console.log("Sort location changed: " + $(this).val());
+		$.post("process.php", {sortLocation: $(this).val(), subsortlocation: 1},
+		function(){
+			$(".sort-list .sort-location-val").val($("#primary-location").val());
+		});
+	});
+	
+	$(".sort-list").submit(function(){
+		var location = $(".sort-list .sort-location-val").val();
 		console.log("Sort list activated at location: " + location);
-		$.post("process.php", {sortlocation: location, subsortlist: 1},
-			function(data)
-			{
-				$(".dashboard-list-container").html(data);
-				console.log("something has returned!");
-			}
-		);
+		
+		//$.get("index.php", {page: "sort", location: location});
 	});
 	
 	$(".dashboard-list-container").on("click", ".return-to-list", function(e){

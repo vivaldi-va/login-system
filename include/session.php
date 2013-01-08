@@ -363,9 +363,11 @@ class Session
 	 * 1. If no errors were found, it registers the new user and
 	 * returns 0. Returns 2 if registration failed.
 	 */
-	function register($subemail, $subpass, $subname){
+	function register($subemail, $subpass1, $subpass2, $subname){
 		global $database, $form, $mailer;  //The database, form and mailer object
 
+		if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Register function called @ session.php</p>\n";}
+		
 		/* email error checking */
 		$field = "email";  //Use field name for email
 		if(!$subemail || strlen($subemail = trim($subemail)) == 0){
@@ -385,11 +387,13 @@ class Session
 			if(!eregi($regex,$subemail)){
 				$form->setError($field, "* Email not valid");
 				$_SESSION['regerrors'] .= "<p>Entered email not valid</p>\n";
+				if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>email not valid</p>\n";}
 			}
 
 			/* Check if email is already in use */
 			else if($database->emailTaken($subemail)){
 				$form->setError($field, "* Email already in use");
+				if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>email in use</p>\n";}
 			}
 			/* Check if email is banned */
 			 	
@@ -400,27 +404,34 @@ class Session
 
 		/* Password error checking */
 		$field = "pass";  //Use field name for password
-		if(!$subpass){
-			$form->setError($field, "* Password not entered");
-			$_SESSION['regerrors'] .= "<p>Password not entered</p>\n";
-		}
-		else{
-			/* Spruce up password and check length*/
-			$subpass = stripslashes($subpass);
-			if(strlen($subpass) < 4){
-				$form->setError($field, "* Password too short");
+		if($subpass1 == $subpass2)
+		{
+			if(!$subpass1){
+				$form->setError($field, "* Password not entered");
+				$_SESSION['regerrors'] .= "<p>Password not entered</p>\n";
+				if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Password not entered</p>\n";}
 			}
-			/* Check if password is not alphanumeric */
-			else if(!eregi("^([0-9a-zA-Z])+$", ($subpass = trim($subpass)))){
-				$form->setError($field, "* Password not alphanumeric");
+			else
+			{
+				/* Spruce up password and check length*/
+				$subpass1 = stripslashes($subpass1);
+				if(strlen($subpass1) < 4){
+					$form->setError($field, "* Password too short");
+				}
+				/* Check if password is not alphanumeric */
+				else if(!eregi("^([0-9a-zA-Z])+$", ($subpass1 = trim($subpass1)))){
+					$form->setError($field, "* Password not alphanumeric");
+					if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Password not alphanumeric</p>\n";}
+				}
+				/**
+				 * Note: I trimmed the password only after I checked the length
+				 * because if you fill the password field up with spaces
+				 * it looks like a lot more characters than 4, so it looks
+				 * kind of stupid to report "password too short".
+				 */
 			}
-			/**
-			 * Note: I trimmed the password only after I checked the length
-			 * because if you fill the password field up with spaces
-			 * it looks like a lot more characters than 4, so it looks
-			 * kind of stupid to report "password too short".
-			 */
 		}
+		
 
 
 

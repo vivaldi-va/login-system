@@ -51,27 +51,39 @@ $pageName = "Sort";
 				<h2><?php echo $shopArray['attributes']['chainName']?></h2>
 				
 				<?php 
-				foreach($shopArray['listItems'] AS $listItemID => $listItemArray)
+				if(isset($shopArray['listItems']))
 				{
-						
-				?>
+					
+					foreach($shopArray['listItems'] AS $listItemID => $listItemArray)
+					{
+							
+					?>
+					
+					<div class="sorted-list-item">
+						<?php echo $listItemArray['quantity']?>&times; 
+						<span class="list-brand"><?php echo $listItemArray['brand']?></span> 
+						<?php echo $listItemArray['name']?> &mdash; 
+						<?php echo $product_functions->formatPriceValue($listItemArray['price'])?>&euro; 
+						<strong>Saved: <?php echo $product_functions->formatPriceValue($listItemArray['saved'])?>&euro;</strong>
+					</div>
+					
+					<?php
+					}
 				
-				<div class="sorted-list-item">
-					<?php echo $listItemArray['quantity']?>&times; 
-					<span class="list-brand"><?php echo $listItemArray['brand']?></span> 
-					<?php echo $listItemArray['name']?> &mdash; 
-					<?php echo $product_functions->formatPriceValue($listItemArray['price'])?>&euro; 
-					<strong>Saved: <?php echo $product_functions->formatPriceValue($listItemArray['saved'])?>&euro;</strong>
-				</div>
-				
-				<?php
-				}
 				?>
 				<footer>
 					shop total: <?php echo $product_functions->formatPriceValue($shopArray['attributes']['total'])?>&euro;
 				</footer>
+				<?php 
+				}
+				else
+				{
+					
+				?>
+				No products for this shop
 			</article>
 			<?php
+				}
 			}
 			?>
 			sum total: <?php echo $product_functions->formatPriceValue($sortedList['attributes']['listtotal'])?>&euro;<br>

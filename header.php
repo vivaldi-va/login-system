@@ -78,7 +78,7 @@
 							</ul><!-- .dropdown-menu -->
 						</div><!-- .btn-group -->
 						<div class="location-form">
-							<input type="text" id="primary-location" class="input pull-right" placeholder="Your Location">
+							<input type="text" id="primary-location" class="input pull-right" value="<?php if(isset($_SESSION['sortLocation'])){echo $_SESSION['sortLocation'];}?>" placeholder="Your Location">
 							<div class="well well-small input-dropdown">
 								<ul class="input-dropdown-group">
 									<li>sello
