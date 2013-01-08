@@ -1224,8 +1224,8 @@ class MySQLDB
 								FROM
 								" . TBL_PRODUCTS . ", " . TBL_SHOPPING_LISTS . ", " . TBL_SHOPPING_LIST_PRODUCTS . ", " . TBL_USERS . "
 								WHERE
-								" . TBL_USERS . ".id = 9 AND
-								" . TBL_SHOPPING_LISTS . ".id = 2 AND
+								" . TBL_USERS . ".id = $userID AND
+								" . TBL_SHOPPING_LISTS . ".id = $listID AND
 								" . TBL_SHOPPING_LISTS . ".id = " . TBL_SHOPPING_LIST_PRODUCTS . ".shoppinglistID AND
 								" . TBL_SHOPPING_LIST_PRODUCTS . ".productID = " . TBL_PRODUCTS . ".id";
 			
@@ -1268,8 +1268,6 @@ class MySQLDB
 				// For each shop counted towards sort, find the latest price for the product
 				foreach($definedStoreIdArray AS $shopID => $value)
 				{
-					// Array serves to get a count of the number of prices to calc average, as well as get the sum
-					$productAverage = array();
 					$q_pricesEachShop = "SELECT
 									" . TBL_PRICES . ".price,
 									" . TBL_PRICES . ".shopID,
@@ -1456,6 +1454,312 @@ class MySQLDB
 			return $sortedListString;
 		}// END IF
 	}// END FUNCTION
+	
+	/**
+	 * Find list of shops based on the input query
+	 * i.e. an address, post code, city etc.
+	 * 
+	 * @param string $location
+	 * @return boolean|multitype:Ambigous Array of shops i.e. {Shop ID => Chain Name}
+	 */
+	function getSortLocations($location, $returnSQL = false)
+	{
+		$query = "SELECT
+						".TBL_SHOPS.".id AS shopID,
+						".TBL_SHOPS.".name AS shopLocation,
+						".TBL_SHOPS.".city AS shopCity,
+						".TBL_CHAINS.".id AS chainID,
+						".TBL_CHAINS.".name AS chainName
+						FROM ".TBL_SHOPS.", ".TBL_CHAINS."
+						WHERE
+						(".TBL_SHOPS.".name LIKE \"$location\" OR
+								".TBL_SHOPS.".city LIKE \"$location\") AND
+								".TBL_CHAINS.".id = ".TBL_SHOPS.".chainID";
+		
+
+		if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p><code>$query</code></p>\n";}
+		
+		$result = mysql_query($query);
+		
+		if(!$result)
+		{
+			if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Query failed: <code>".mysql_error()."</code></p>\n";}
+			return false;
+		}
+		
+		if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Found location, fetching an array of the locations @ database.php</p>\n";}
+			
+		/*
+		 * Add each of the found shops under an array, with the key
+		* being their shopID, and the value being the shop name
+		*
+		* Shop ID => chain name
+		*/
+		$definedStoreIdArray = array();
+		while($locationDbArray = mysql_fetch_assoc($result))
+		{
+			$definedStoreIdArray[$locationDbArray['shopID']] = $locationDbArray['chainName'];
+			if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Added shop ".$locationDbArray['shopID']."</p>\n";}
+		}
+			
+	
+		if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Collecting the products in the database";}
+		return $definedStoreIdArray;
+	}
+	
+	/**
+	 * Get a list of the items in the user's shopping list.
+	 * 
+	 * @param int $userID
+	 * @param int $listID
+	 * @return boolean|multitype: array of items in nested arrays
+	 */
+	function getUserListInfo($userID, $listID, $locationArray)
+	{
+		// Get a list of individual products in list
+		$query = "SELECT
+				" . TBL_PRODUCTS . ".id AS productID,
+				" . TBL_PRODUCTS . ".name,
+				" . TBL_PRODUCTS . ".picUrl,
+				" . TBL_PRODUCTS . ".barcode,
+				" . TBL_PRODUCTS . ".categoryID,
+				" . TBL_SHOPPING_LIST_PRODUCTS . ".id AS listItemID,
+				" . TBL_SHOPPING_LIST_PRODUCTS . ".quantity,
+				" . TBL_BRANDS . ".name AS brandName
+				FROM
+				" . TBL_PRODUCTS . ", " . TBL_SHOPPING_LISTS . ", " . TBL_SHOPPING_LIST_PRODUCTS . ", " . TBL_USERS . ", " . TBL_BRANDS . "
+				WHERE
+				" . TBL_USERS . ".id = $userID AND
+				" . TBL_SHOPPING_LISTS . ".id = $listID AND
+				" . TBL_SHOPPING_LISTS . ".id = " . TBL_SHOPPING_LIST_PRODUCTS . ".shoppinglistID AND
+				" . TBL_SHOPPING_LIST_PRODUCTS . ".productID = " . TBL_PRODUCTS . ".id AND
+				" . TBL_BRANDS . ".id = " . TBL_PRODUCTS . ".brandID";
+			
+		if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p><code>$query</code></p>\n";}
+		
+		$result = mysql_query($query);
+		
+		if (!$result)
+		{
+			if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Estimated saved query failed: <code>".mysql_error()."</code></p>\n";}
+			return false;
+		}
+		elseif(mysql_num_rows($result) == 0)
+		{
+			if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>No products found</p>\n";}
+		}
+		
+		$productArray = array();
+		$shopIDArray = array();
+		foreach ($locationArray AS $shopID => $value)
+		{
+			$shopIDArray[] = $shopID;
+		}
+		
+		// Create an sql snippet of the stores found at the location
+		$locationSQL = "(".TBL_SHOPS.".id = ". implode(" OR ".TBL_SHOPS.".id = ", $shopIDArray) . ")";
+		if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p><code>$locationSQL</code></p>\n";}
+		
+		
+		/*
+		 * For each product found, find the price at each of the shops found for the location.
+		 */
+		while($dbArray = mysql_fetch_assoc($result))
+		{
+			if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Starting to find prices for product #" . $dbArray['productID'] . "</p>\n";}
+			// Basic product information
+			$productArray[$dbArray['productID']] = array("quantity" => $dbArray['quantity'], 
+														"listItemID" => $dbArray['listItemID'], 
+														"name" => $dbArray['name'],
+														"brand" => $dbArray['brandName'],
+														"barcode" => $dbArray['barcode'],
+														"category" => $dbArray['categoryID'],
+														"pic" => $dbArray['picUrl']
+														);
+			
+			
+			/*
+			 * For each of the shops,
+			* get product price info
+			*/
+			$query_prices =
+			"SELECT
+			" .TBL_PRODUCTS. ".id AS productID,
+			" .TBL_PRICES. ".price AS price,
+			max(" .TBL_PRICES. ".created),
+			" .TBL_SHOPS. ".id AS shopID
+			FROM
+			" .TBL_USERS. ", " .TBL_SHOPPING_LISTS. ", " .TBL_SHOPPING_LIST_PRODUCTS. ", " .TBL_PRODUCTS. ", " .TBL_PRICES. ", " .TBL_SHOPS. "
+			WHERE
+			$userID = " .TBL_USERS. ".id AND
+			$listID = " .TBL_SHOPPING_LISTS. ".id AND
+			" . $dbArray['productID'] . " = " .TBL_PRODUCTS. ".id AND
+			" .TBL_PRICES. ".productID = " .TBL_PRODUCTS. ".id AND
+			" .TBL_PRICES. ".shopID = " .TBL_SHOPS. ".id AND 
+			$locationSQL 
+			GROUP BY " .TBL_SHOPS. ".id";
+				
+			if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p><strong>Query to get product prices:</strong><br><code>$query_prices</code></p>\n";}
+			
+			$result_prices = mysql_query($query_prices);
+			if(!$result_prices)
+			{
+				if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Query failed: <code>".mysql_error()."</code></p>\n";}
+				return false;
+			}
+			
+			// Define the array to hold the product's prices
+			//array_push($pricesArray[$dbArray['productID']], array());
+			$productArray[$dbArray['productID']]['prices'] = array();
+			
+			// Loop through all the products found at this shop, and add each product's price to an array
+			while($dbArray_prices = mysql_fetch_assoc($result_prices))
+			{
+				$productArray[$dbArray['productID']]['prices'][$dbArray_prices['shopID']] = $dbArray_prices['price'];
+				
+				if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Added " . $dbArray_prices["price"] . " to total.</p>\n";}
+			}
+		}
+		
+		/*
+		 * dump the array to debug
+		 */
+		if(DEBUG_MODE)
+		{
+			$productArrayDumpString = $this->dumpArray($productArray);
+			$_SESSION['debug_info'] .= "<p>product info array: <br> $productArrayDumpString</p>\n";
+		}
+		
+		
+		return $productArray;
+		
+		
+		
+		
+		
+		
+		// Declare the array that will hold the prices for each shop
+		$pricesArray = array();
+		
+		foreach($productArray AS $productID => $infoArray)
+		{
+			/*
+			 * For each of the shops,
+			 * get product price info
+			*/
+			$query = 
+			"SELECT
+			" .TBL_PRODUCTS. ".id,
+			" .TBL_PRICES. ".price,
+			min(" .TBL_PRICES. ".created),
+			" .TBL_SHOPS. ".id
+			FROM
+			" .TBL_USERS. ", " .TBL_SHOPPING_LISTS. ", " .TBL_SHOPPING_LIST_PRODUCTS. ", " .TBL_PRODUCTS. ", " .TBL_PRICES. ", " .TBL_SHOPS. "
+			WHERE
+			$userID = " .TBL_USERS. ".id AND
+			$listID = " .TBL_SHOPPING_LISTS. ".id AND
+			$productID = " .TBL_PRODUCTS. ".id AND
+			" .TBL_PRICES. ".productID = " .TBL_PRODUCTS. ".id AND
+			" .TBL_PRICES. ".shopID = " .TBL_SHOPS. ".id
+			GROUP BY prices.id";
+					
+			if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p><code>$query</code></p>\n";}
+		
+			$result = mysql_query($query);
+			if(!$result)
+			{
+				if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Query failed: <code>".mysql_error()."</code></p>\n";}
+				return false;
+			}
+			
+			
+			// Loop through all the products found at this shop, and add each product's price to an array
+			while($dbArray = mysql_fetch_assoc($result))
+			{
+				$productTotalPrice = $dbArray["price"] * $dbArray["quantity"];
+				$shopTotals[$shopID] += $productTotalPrice;
+				
+				
+				array_push($pricesArray[$shopID], $dbArray['price']); 
+				
+				if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Added " . $dbArray["price"] . " to total.</p>\n";}
+			}
+				
+		}
+		return $productArray;
+		
+		
+		
+	}
+	
+	
+	function getListPrices($list)
+	{
+		/*************************************************************
+		 * FIND TOTALS FOR EACH STORE
+		*************************************************************/
+			
+		$shopTotals = array();
+			
+		//Loop through each store, which were found in the previous algorithm
+		foreach($definedStoreIdArray AS $shopID => $chainName)
+		{
+			// set variable for the store
+			$shopTotals[$shopID] = 0;
+		
+			//Query to get all the products from the list, with the latest prices for each product.
+			$query = 'SELECT
+				'.TBL_SHOPPING_LISTS.'.id,
+				'.TBL_SHOPPING_LISTS.'.userID,
+				'.TBL_SHOPPING_LIST_PRODUCTS.'.id AS listItemID,
+				'.TBL_SHOPPING_LIST_PRODUCTS.'.shoppingListID,
+				'.TBL_SHOPPING_LIST_PRODUCTS.'.ProductID,
+				'.TBL_SHOPPING_LIST_PRODUCTS.'.quantity AS quantity,
+				'.TBL_PRODUCTS.'.id AS productID,
+				'.TBL_PRODUCTS.'.name AS productName,
+				'.TBL_PRICES.'.price AS price,
+				min('.TBL_PRICES.'.created)
+				FROM
+				'.TBL_USERS.',
+				'.TBL_SHOPPING_LISTS.',
+				'.TBL_SHOPPING_LIST_PRODUCTS.',
+				'.TBL_PRODUCTS.',
+				'.TBL_PRICES.',
+				'.TBL_SHOPS.'
+				WHERE
+				'.$userID.' = '.TBL_SHOPPING_LISTS.'.userID AND
+				'.$userID.' = '.TBL_USERS.'.id AND
+				'.$listID.' = '.TBL_SHOPPING_LIST_PRODUCTS.'.shoppinglistID AND
+				'.TBL_PRODUCTS.'.id = '.TBL_SHOPPING_LIST_PRODUCTS.'.productID AND ' .
+				TBL_PRICES.'.productID = '.TBL_PRODUCTS.'.id AND ' .
+				TBL_SHOPS.'.id = ' . $shopID . ' AND ' .
+				TBL_PRICES.'.shopID = '.TBL_SHOPS.'.id' .
+				' GROUP BY '.TBL_PRICES.'.id';
+
+				if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p><code>$query</code></p>\n";}
+
+				$result = mysql_query($query);
+				if(!$result)
+				{
+					if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Query failed: <code>".mysql_error()."</code></p>\n";}
+					return false;
+				}
+				elseif(mysql_num_rows($result) == 0)
+				{
+					if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>No prices for this store</p>\n";}
+				}
+
+				// Loop through all the products found at this shop, and add each price to the total
+				while($dbArray = mysql_fetch_assoc($result))
+				{
+					$productTotalPrice = $dbArray["price"] * $dbArray["quantity"];
+					$shopTotals[$shopID] += $productTotalPrice;
+					if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Added " . $dbArray["price"] . " to total.</p>\n";}
+				}
+		
+		}//FOREACH
+	}
+	
 	
 	/**
 	 * Calculate the approximate amount saved from the shop price totals given in the array
@@ -2210,6 +2514,18 @@ GROUP BY prices.id";
 		}
 		return mysql_num_rows($result);
 	}
+	
+	
+	function dumpArray($array)
+	{
+		ob_start();
+		var_dump($array);
+		$arrayDump = ob_get_clean();
+		return $arrayDump;
+	}
+	
+	
+	
 
 	/**
 	 * query - Performs the given query on the database and

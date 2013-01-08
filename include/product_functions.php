@@ -208,8 +208,9 @@
 			if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>List sort attempted @ product_functions.php</p>\n";}
 			if($location === "" || $location == null || empty($location))
 			{
-				return "<div class=\"alert\">No location entered</div>";
+				return "<div class=\"alert alert-info\">No location entered</div>";
 			}
+			/*
 			if($sortedList = $database->returnSortedList($session->userid, $session->userListID, $location))
 			//if($sortedList = $database->returnSortedList($session->userid, $session->userListID))
 			{
@@ -219,6 +220,157 @@
 			{
 				return "No prices for items in list";
 			}
+			*/
+			
+			$sortLocation = $database->getSortLocations($location);
+			$productInfo = $database->getUserListInfo($session->userid, $session->userListID, $sortLocation);
+			if($productInfo)
+			{
+				$saved = $this->calcSavings($productInfo);	
+			}
+			
+			// Declare the array to be returned
+			$sortedArray = array();
+			
+			// Declare a sub-array for each of the sort locations, using the shopID as the key
+			foreach($sortLocation AS $shopID => $chainName)
+			{
+				// Shop's array to hold prices and info
+				$sortedArray[$shopID] = array();
+				$sortedArray[$shopID]['total'] = 0;
+			}
+			
+			// Sub-array for products that have no price
+			$sortedArray['noprice'] = array();
+			
+			// Sum total of the sorted list
+			$sortedArray['listtotal'] = 0;
+			$sortedArray['totalsaved'] = 0;
+			
+			
+			foreach($saved AS $listItemID => $array)
+			{
+				if($array['minPrice'] === "n/a")
+				{
+					$sortedArray['noprice'][$listItemID] = array("name" => $array['name'], "brand" => $array['brand'], "quantity" => $array['quantity']);
+				}
+				else
+				{
+					$sortedArray[$array['minPrice']['shopID']][$listItemID] = array("name" => $array['name'], "brand" => $array['brand'], "quantity" => $array['quantity'], "price" => $array['minPrice']['price'], "saved" => $array['savings']);
+					$sortedArray[$array['minPrice']['shopID']]['total'] += $array['minPrice']['price'];
+					$sortedArray['listtotal'] += $array['minPrice']['price'];
+					$sortedArray['totalsaved'] += $array['savings'];
+					
+				}
+			}
+			
+			if(DEBUG_MODE)
+			{
+				$dumpString = $database->dumpArray($sortedArray);
+				$_SESSION['debug_info'] .= "<p>sorted array: <br> $dumpString</p>\n";
+			}
+			
+			
+			return $sortedArray;
+			
+		}
+		
+		function calcShopTotals($productArray)
+		{
+			global $database;
+			$totals = array();
+			foreach($productArray AS $productID => $array)
+			{
+				$quantity = $array['quantity'];
+				foreach($array['prices'] AS $shopID => $price)
+				{
+					if(!isset($totals[$shopID]))
+					{
+						$totals[$shopID] = $price * $quantity;
+						if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Adding " . $price * $quantity . " to shop #$shopID</p>\n";}
+					}
+					else
+					{
+						$totals[$shopID] += $price * $quantity;
+						if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Adding " . $price * $quantity . " to shop #$shopID</p>\n";}
+					}
+				}
+			}
+			
+			if(DEBUG_MODE)
+			{
+				$dumpString = $database->dumpArray($totals);
+				$_SESSION['debug_info'] .= "<p>product info array: <br> $dumpString</p>\n";
+			}
+			
+			return $totals;
+		}
+		
+		function calcSavings($productArray)
+		{
+			global $database;
+			$savingsArray = array();
+			
+			// For each product
+			foreach($productArray AS $productID => $array)
+			{
+				$savingsArray[$array['listItemID']] = array();
+				// If there are 2 products to compare
+				
+				$savingsArray[$array['listItemID']]['name'] = $array['name'];
+				$savingsArray[$array['listItemID']]['brand'] = $array['brand'];
+				$savingsArray[$array['listItemID']]['quantity'] = $array['quantity'];
+				
+				if(count($array['prices']) == 2)
+				{
+					/*
+					 * get the minimum value in the array using min()
+					 * Subtract the minimum value from the maximum value to get the savings estimation 
+					 */
+
+					$minPriceKey = array_keys($array['prices'], min($array['prices']));
+					if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Min price key: $minPriceKey[0]</p>\n";}
+					$savingsArray[$array['listItemID']]['minPrice'] = array("shopID" => $minPriceKey[0], "price" => min($array['prices']) * $array['quantity']);
+					$savingsArray[$array['listItemID']]['savings'] = max($array['prices']) * $array['quantity']  - min($array['prices']) * $array['quantity'];
+				}
+				// If there are more than 3 prices to compare
+				elseif (count($array['prices']) > 2)
+				{
+					/*
+					 * sort the array by values
+					 * set the minimum price as the 1st value (sorted min-max)
+					 * subtract the 2nd value from the first to get savings estimation
+					 */
+					$sortedPrices = asort($array['prices']);
+					$minPriceKey = array_keys($array['prices'],$array['prices'][0]);
+					if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Min price key: $minPriceKey[0]</p>\n";}
+					$savingsArray[$array['listItemID']]['minPrice'] = array("shopID" => $minPriceKey[0], "price" => $array['prices'][0] * $array['quantity']);
+					$savingsArray[$array['listItemID']]['savings'] = $array['prices'][1] * $array['quantity'] - $array['prices'][0] * $array['quantity'];
+				}
+				// failsafe if there are 1 or no prices (savings = 0)
+				else
+				{
+					if(!empty($array['prices']))
+					{
+						$savingsArray[$array['listItemID']]['minPrice'] = $array['prices'][0];
+						$savingsArray[$array['listItemID']]['savings'] = 0;
+					}
+					else
+					{
+						$savingsArray[$array['listItemID']]['minPrice'] = "n/a";
+						$savingsArray[$array['listItemID']]['savings'] = 0;
+					}
+						
+				}
+			}
+			
+			if(DEBUG_MODE)
+			{
+				$dumpString = $database->dumpArray($savingsArray);
+				$_SESSION['debug_info'] .= "<p>savings prices array: <br> $dumpString</p>\n";
+			}
+			
+			return $savingsArray;
 		}
 		
 		/**
@@ -437,18 +589,32 @@
 			
 		}
 		
-		function getProductPrice($productID, $shopID)
+		function getProductPrice($productID, $shopID, $discount = false)
 		{
 			global $database;
-			if($price = $database->getProductPrice($productID, $shopID))
+			if($discount)
 			{
-				$price =  str_replace('.', ',', strval(round($price, 2)));
-				return $this->formatPriceValue($price);
+				if($priceInfoArray = $database->getProductPrice($productID, $shopID, true))
+				{
+					$priceID = $priceInfoArray['id'];
+				}
+				if($database->getProductDiscount($priceID))
+				{
+					
+				}
 			}
 			else
 			{
-				if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Failed to get price @ product_functions.php</p>\n";}
-				return false;
+				if($price = $database->getProductPrice($productID, $shopID))
+				{
+					$price =  str_replace('.', ',', strval(round($price, 2)));
+					return $this->formatPriceValue($price);
+				}
+				else
+				{
+					if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Failed to get price @ product_functions.php</p>\n";}
+					return false;
+				}
 			}
 		}
 		
@@ -492,6 +658,13 @@
 		{
 			$formattedPrice = str_replace('.', ',', strval($price));
 			return $formattedPrice;
+		}
+		
+		
+		
+		function calcListTotals($listArray)
+		{
+			
 		}
 		
 	};
