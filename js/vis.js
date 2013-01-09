@@ -10,7 +10,7 @@ function populateList()
 }
 */
 
-function loadingAnimation(stop=false)
+function loadingAnimation(stop)
 {
 	if(!stop)
 	{
@@ -367,7 +367,7 @@ $(document).ready(function(){
 		{
 			$(".toolbar-add-item-brand-results").show('fast');
 			var term = $(this).val();
-			loadingAnimation();
+			loadingAnimation(false);
 			$.get("process.php", {subbrandsearch: 1, brandString: term}, 
 			function(data)
 			{
@@ -653,7 +653,7 @@ $(document).ready(function(){
 		if(listItemID.length >= 0)
 		{
 			//$(".dashboard-loading").show("fast");
-			loadingAnimation();
+			loadingAnimation(false);
 			$.post("process.php", {remProdID: listItemID, subremovefromlist: 1},
 			function(data)
 			{
@@ -677,7 +677,7 @@ $(document).ready(function(){
 		var barcode = $(".edit-product-barcode").val();
 		var description = $(".edit-product-description").val();
 		
-		loadingAnimation();
+		loadingAnimation(false);
 		$.post("process.php", {productID: productID, productName: productName, brandName: brandName, category: category, barcode: barcode, description: description, subupdateproduct: 1},
 		function(data)
 		{

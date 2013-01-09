@@ -68,14 +68,16 @@
 								<?php echo $session->userName;?>
 								<span class="caret"></span>
 							</button>
-							<ul class="dropdown-menu mobile-show-dropdown">
-								<li><?php echo "<a href=\"userinfo.php?user=$session->email\">My Account</a>\n" ?>
-								<li><?php echo "<a href=\"useredit.php\">Edit Account</a>\n"; ?>
-								<?php if($session->isAdmin()){?>
-								<li><?php echo "<a href=\"admin.php\">Admin Centre</a>\n"; ?>
-								<?php }?>
-								<li><?php echo "<a href=\"process.php\">Logout</a>\n"; ?>
-							</ul><!-- .dropdown-menu -->
+							<div class="dropdown-menu mobile-show-dropdown" ">
+								<ul>
+									<li><?php echo "<a href=\"userinfo.php?user=$session->email\">My Account</a>\n" ?>
+									<li><?php echo "<a href=\"useredit.php\">Edit Account</a>\n"; ?>
+									<?php if($session->isAdmin()){?>
+									<li><?php echo "<a href=\"admin.php\">Admin Centre</a>\n"; ?>
+									<?php }?>
+									<li><?php echo "<a href=\"process.php\">Logout</a>\n"; ?>
+								</ul><!-- .dropdown-menu -->
+							</div>
 						</div><!-- .btn-group -->
 						<div class="location-form">
 							<input type="text" id="primary-location" class="input pull-right" value="<?php if(isset($_SESSION['sortLocation'])){echo $_SESSION['sortLocation'];}?>" placeholder="Your Location">

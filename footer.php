@@ -5,23 +5,13 @@
   </div> <!--! end of .wrapper -->
 
 
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script> 
 	<script>window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')</script>
 	<script type="text/javascript" src="./js/vis.js"></script>
 	<script src="js/bootstrap.min.js"></script>
-	<script src="js/responsive-tables.js"></script>
+	<!-- <script src="js/responsive-tables.js"></script> -->
   <!-- scripts concatenated and minified via ant build script-->
-  <script defer src="js/plugins.js"></script>
-  <script defer src="js/script.js"></script>
   <!-- end scripts-->
-
-
-  <script> // Change UA-XXXXX-X to be your site's ID
-    window._gaq = [['_setAccount','UAXXXXXXXX1'],['_trackPageview'],['_trackPageLoadTime']];
-    Modernizr.load({
-      load: ('https:' == location.protocol ? '//ssl' : '//www') + '.google-analytics.com/ga.js'
-    });
-  </script>
 
 
   <!--[if lt IE 7 ]>
