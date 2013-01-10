@@ -219,33 +219,40 @@ class Session
 	{
 		global $database, $form;  //The database and form object
 
+		if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>incoming login info: <br> $subemail, $subpass</p>\n";}
+		
 		/* email error checking */
 		$field = "email";  //Use field name for email
 		if(!$subemail || strlen($subemail = trim($subemail)) == 0)
 		{
 			$form->setError($field, "* email not entered");
+			if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Email not entered @ session.php</p>\n";}
+			return 2;
 		}
-		else
+		/*else
 		{
-			/* Check if email is not alphanumeric */
+			// Check if email is not alphanumeric
 			if(!preg_match("/^([0-9a-z@.-_])*$/", $subemail, $matches))
 			{
 				$form->setError($field, "* email not alphanumeric");
 				if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Email didnt match preg() pattern @ session.php</p>\n";}
+				return 3;
 			}
-		}
+		}*/
 
 		/* Password error checking */
 		$field = "pass";  //Use field name for password
 		if(!$subpass)
 		{
 			$form->setError($field, "* Password not entered");
+			if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Password not entered @ session.php</p>\n";}
+			return 4;
 		}
 
 		/* Return if form errors exist */
 		if($form->num_errors > 0)
 		{
-			return false;
+			//return false;
 		}
 
 		if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>No validation errors in login() at session.php</p>\n";}
@@ -257,19 +264,21 @@ class Session
 
 
 		/* Check error codes */
-		if($result == 1){
+		if($result == 3){
 			$field = "email";
 			$form->setError($field, "* email not found");
+			if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>email not found</p>\n";}
 		}
 		else if($result == 2){
 			$field = "pass";
 			$form->setError($field, "* Invalid password");
+			if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>invalid password</p>\n";}
 		}
 
 		/* Return if form errors exist */
-		if($form->num_errors > 0){
+		/*if($form->num_errors > 0){
 			return false;
-		}
+		}*/
 
 		/* email and password correct, register session variables */
 		if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Calling getUserInfo(".$subemail.")</p>\n";}
@@ -404,33 +413,41 @@ class Session
 
 		/* Password error checking */
 		$field = "pass";  //Use field name for password
-		if($subpass1 == $subpass2)
-		{
-			if(!$subpass1){
-				$form->setError($field, "* Password not entered");
-				$_SESSION['regerrors'] .= "<p>Password not entered</p>\n";
-				if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Password not entered</p>\n";}
-			}
-			else
-			{
-				/* Spruce up password and check length*/
-				$subpass1 = stripslashes($subpass1);
-				if(strlen($subpass1) < 4){
-					$form->setError($field, "* Password too short");
-				}
-				/* Check if password is not alphanumeric */
-				else if(!eregi("^([0-9a-zA-Z])+$", ($subpass1 = trim($subpass1)))){
-					$form->setError($field, "* Password not alphanumeric");
-					if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Password not alphanumeric</p>\n";}
-				}
-				/**
-				 * Note: I trimmed the password only after I checked the length
-				 * because if you fill the password field up with spaces
-				 * it looks like a lot more characters than 4, so it looks
-				 * kind of stupid to report "password too short".
-				 */
-			}
+		
+		if(!$subpass1){
+			$form->setError($field, "* Password not entered");
+			$_SESSION['regerrors'] .= "<p>Password not entered</p>\n";
+			if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Password not entered</p>\n";}
 		}
+		else
+		{
+			if($subpass1 != $subpass2)
+			{
+				if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Passwords do not match</p>\n";}
+				$form->setError($field, "* Passwords dont match");
+			}
+			
+			/* Spruce up password and check length*/
+			$subpass1 = stripslashes($subpass1);
+			$subpass2 = stripslashes($subpass2);
+			if(strlen($subpass1) < 4 || strlen($subpass2) < 4){
+				$form->setError($field, "* Password too short");
+			}
+			/* Check if password is not alphanumeric */
+			else if(!eregi("^([0-9a-zA-Z])+$", ($subpass1 = trim($subpass1))) || 
+					!eregi("^([0-9a-zA-Z])+$", ($subpass1 = trim($subpass1))))
+			{
+				$form->setError($field, "* Password not alphanumeric");
+				if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Password not alphanumeric</p>\n";}
+			}
+			/**
+			 * Note: I trimmed the password only after I checked the length
+			 * because if you fill the password field up with spaces
+			 * it looks like a lot more characters than 4, so it looks
+			 * kind of stupid to report "password too short".
+			 */
+		}
+		
 		
 
 

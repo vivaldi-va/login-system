@@ -91,7 +91,7 @@ $pageName = "Sort";
 			
 			<?php
 		}
-		else
+		elseif(empty($_GET['location']) || $_GET['location'] == "")
 		{
 		?>
 		

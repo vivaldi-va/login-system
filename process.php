@@ -183,7 +183,8 @@ class Process
 		}*/
 		
 		$retval = $session->login($_POST['email'], $_POST['pass'], isset($_POST['remember']));
-		$_SESSION['value_array'] = $_POST;
+		if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>" . $_POST['email'] . ", " . $_POST['pass'] . "</p>\n";}
+		//$_SESSION['value_array'] = array($_POST['email'], $_POST['pass'], $_POST['remember']);
 		$_SESSION['error_array'] = $form->getErrorArray();
 		
 		/* Login successful */
@@ -196,11 +197,23 @@ class Process
 			//header("Location: main.php");
 		}
 		/* Login failed */
-		else
+		elseif($retval == 2)
 		{
+			if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Login function <strong>fail</strong>: no email entered @ process.php</p>\n";}
+		}
+		elseif($retval == 3)
+		{
+			if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Login function <strong>fail</strong>: invalid email @ process.php</p>\n";}
+		}
+		elseif($retval == 4)
+		{
+			if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Login function <strong>fail</strong>: password not entered @ process.php</p>\n";}
+		}
+		else {
+			
 			if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Login function <strong>fail</strong> @ process.php</p>\n";}
 			if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Executing header() redirection to ".$session->referrer."</p>\n";}
-			header("Location: ".$session->referrer);
+			//header("Location: ".$session->referrer);
 		}
 	}
 	 
@@ -228,28 +241,30 @@ class Process
 		
 		/* Convert username to all lowercase (by option) */
 		//if(ALL_LOWERCASE){
-		$_POST['email'] = strtolower($_POST['email']);
+		$_POST['reg-email'] = strtolower($_POST['reg-email']);
 		//}
 		/* Registration attempt */
-		$retval = $session->register($_POST['email'], $_POST['password1'], $_POST['password2'], $_POST['name']);
+		$retval = $session->register($_POST['reg-email'], $_POST['reg-password1'], $_POST['reg-password2'], $_POST['reg-name']);
 
+		if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>" . $_POST['reg-email'] . ", " . $_POST['reg-password1'] . ", " . $_POST['reg-password2'] . ", " . $_POST['reg-name'] . "</p>\n";}
+		
 		/* Registration Successful */
 		if($retval == 0){
 			$_SESSION['reguname'] = $_POST['email'];
 			$_SESSION['regsuccess'] = true;
-			header("Location: ".$session->referrer);
+			header("Location: index.php");
 		}
 		/* Error found with form */
 		else if($retval == 1){
 			$_SESSION['value_array'] = $_POST;
 			$_SESSION['error_array'] = $form->getErrorArray();
-			header("Location: ".$session->referrer);
+			header("Location: register.php");
 		}
 		/* Registration attempt failed */
 		else if($retval == 2){
 			$_SESSION['reguname'] = $_POST['email'];
 			$_SESSION['regsuccess'] = false;
-			header("Location: ".$session->referrer);
+			header("Location: register.php");
 		}
 	}
 	 

@@ -18,7 +18,7 @@ $pageName = "Edit Product";
 		{
 		?>
 			<section class="edit-product">
-				<h2>Editing <?php echo $product_functions->getProductDetails($_GET['prodid'], "name");?></h2>
+				<h2><?php echo $product_functions->getProductDetails($_GET['prodid'], "name");?></h2>
 				<form class="edit-product-form">
 					<fieldset>
 					<legend>Required</legend>

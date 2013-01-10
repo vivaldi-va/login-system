@@ -72,23 +72,27 @@ class MySQLDB
 		if(!$result || (mysql_numrows($result) < 1)){
 			return 1; //Indicates username failure
 		}
-		if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>User pass confirmed</p>\n";}
 		/* Retrieve password from result, strip slashes */
 		$dbarray = mysql_fetch_array($result);
 		$dbarray['passhash'] = stripslashes($dbarray['passhash']);
 		$dbarray['salt'] = stripslashes($dbarray['salt']);
 		$password = stripslashes($password);
+		if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>User pass: $password</p>\n";}
 
 		/* Reconstruct the passhash with the user's inputted password and retrieved salt */
 		$password = md5( md5( $password ) . md5( $dbarray['salt'] ) );
+		if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>hashed user pass: $password</p>\n";}
 
 		/* Validate that password is correct */
 		if($password == $dbarray['passhash'])
 		{
-			return 0; //Success! Username and password confirmed
+			if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>User pass confirmed</p>\n";}
+			return true; //Success! Username and password confirmed
 		}
 		else
 		{
+			if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Password failure @ database.php<br>
+					$password != " . $dbarray['passhash'] . "</p>\n";}
 			return 2; //Indicates password failure
 		}
 	}
@@ -1165,7 +1169,7 @@ class MySQLDB
 				'.TBL_PRODUCTS.'.id AS productID,
 				'.TBL_PRODUCTS.'.name AS productName,
 				'.TBL_PRICES.'.price AS price,
-				min('.TBL_PRICES.'.created)
+				max('.TBL_PRICES.'.created)
 				FROM
 				'.TBL_USERS.',
 				'.TBL_SHOPPING_LISTS.',
@@ -1402,6 +1406,7 @@ class MySQLDB
 				{
 					$sortedListShopTotal[$dbArray_priceSort['shopID']] = 0;
 				}
+				
 				/*
 				 * formatted list item
 				 */
@@ -1718,7 +1723,7 @@ class MySQLDB
 				'.TBL_PRODUCTS.'.id AS productID,
 				'.TBL_PRODUCTS.'.name AS productName,
 				'.TBL_PRICES.'.price AS price,
-				min('.TBL_PRICES.'.created)
+				max('.TBL_PRICES.'.created)
 				FROM
 				'.TBL_USERS.',
 				'.TBL_SHOPPING_LISTS.',

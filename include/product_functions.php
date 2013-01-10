@@ -206,9 +206,10 @@
 		{
 			global $database, $session;
 			if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>List sort attempted @ product_functions.php</p>\n";}
-			if($location === "" || $location == null || empty($location))
+			if($location == "" || $location == null || empty($location))
 			{
 				return "<div class=\"alert alert-info\">No location entered</div>";
+				if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Location is empty</p>\n";}
 			}
 			/*
 			if($sortedList = $database->returnSortedList($session->userid, $session->userListID, $location))
