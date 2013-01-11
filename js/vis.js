@@ -689,6 +689,11 @@ $(document).ready(function(){
 	
 	
 	
+	$(".checkout-button").click(function(e){
+		e.preventDefault();
+		$(this).toggleClass("checked-out");
+	});
+	
 });//document.ready
 
 /*

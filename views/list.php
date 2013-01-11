@@ -9,7 +9,7 @@
 		
 		<form class="form-horizontal sort-list" method="GET" action="index.php">
 			<input type="hidden" name="page" value="sort">
-			<input type="hidden" value="<?php echo $_SESSION['sortLocation'];?>" name="location" class="sort-location-val">
+			<input type="hidden" value="<?php if(isset($_SESSION['sortLocation'])){echo $_SESSION['sortLocation'];}?>" name="location" class="sort-location-val">
 			<button class="btn btn-primary sort-list-submit" type="submit">go shopping!</button>
 		</form>	
 		

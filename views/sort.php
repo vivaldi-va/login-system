@@ -22,32 +22,9 @@ $pageName = "Sort";
 			$sortedList = $product_functions->sortList($_GET['location']);
 			foreach($sortedList['shops'] AS $shopID => $shopArray)
 			{
-			
-				/*if($shopID === "noprice")
-				{
-				?>
-							
-					<article class="sorted-list">
-						<h2>products with no price</h2>
-					<?php 
-						foreach($sortedList['noprice'] AS $listItemID => $listItemArray)
-						{
-						?>
-							<div class="sorted-list-item">
-								<span class="list-brand"><?php echo $listItemArray['brand']?></span> 
-								<?php echo $listItemArray['name']?>
-							</div>
-						<?php
-						}
-					?>
-					</article>
-					
-				<?php
-				}
-				*/
 			?>
 			
-			<article class="sorted-list">
+			<article class="sorted-list <?php if($shopID == 3){echo "prisma";}elseif($shopID == 70){echo "kmarket";}?>">
 				<h2><?php echo $shopArray['attributes']['chainName']?></h2>
 				
 				<?php 
@@ -62,9 +39,12 @@ $pageName = "Sort";
 					<div class="sorted-list-item">
 						<?php echo $listItemArray['quantity']?>&times; 
 						<span class="list-brand"><?php echo $listItemArray['brand']?></span> 
-						<?php echo $listItemArray['name']?> &mdash; 
-						<?php echo $product_functions->formatPriceValue($listItemArray['price'])?>&euro; 
-						<strong>Saved: <?php echo $product_functions->formatPriceValue($listItemArray['saved'])?>&euro;</strong>
+						<?php echo $listItemArray['name']?>
+						<div class="price-info">
+							<?php echo $product_functions->formatPriceValue($listItemArray['price'])?>&euro; 
+							<small>Saved: <?php echo $product_functions->formatPriceValue($listItemArray['saved'])?>&euro;</small>
+						</div>
+						<div class="checkout-button">checkout this item</div>
 					</div>
 					
 					<?php
@@ -81,14 +61,19 @@ $pageName = "Sort";
 					
 				?>
 				No products for this shop
-			</article>
 			<?php
 				}
+				?>
+				
+			</article>
+				<?php 
+				
 			}
 			?>
-			sum total: <?php echo $product_functions->formatPriceValue($sortedList['attributes']['listtotal'])?>&euro;<br>
-			<em>total saved: <?php echo $product_functions->formatPriceValue($sortedList['attributes']['totalsaved'])?>&euro;</em>
-			
+			<div class="totals">
+				<span class="sum-total">sum total: <?php echo $product_functions->formatPriceValue($sortedList['attributes']['listtotal'])?>&euro;</span>
+				<span class="total-saved">total saved: <?php echo $product_functions->formatPriceValue($sortedList['attributes']['totalsaved'])?>&euro;</span>
+			</div>
 			<?php
 		}
 		elseif(empty($_GET['location']) || $_GET['location'] == "")

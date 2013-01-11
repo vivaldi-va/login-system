@@ -135,25 +135,38 @@
 						<div class="span6">
 							<h2>add shop</h2>
 							<form>
-								<label for="admin-shop-location">Location</label>
-								<input type="text" id="admin-shop-location" name="admin-shop-location" class="input">
-								
 								<label for="admin-shop-chain">Chain</label>
+	
 								<select id="admin-shop-chain" name="admin-shop-location">
-									<option>Chains go here eventually
+									<?php foreach($chainArray = $product_functions->chainList() AS $chainID => $chainName){?>
+									<option value="<?php echo $chainID?>"><?php echo $chainName?></option>
+									<?php }?>
 								</select>
 								
+								<label for="admin-shop-location">Location</label>
+								<input type="text" id="admin-shop-location" name="admin-shop-location" class="input" placeholder="e.g. Pasila, Viikki">
+								
 								<label for="admin-shop-address">address</label>
-								<input type="text" id="admin-shop-address" class="input">
+								<input type="text" id="admin-shop-address" name="admin-shop-address" class="input">
 								
 								<label for="admin-shop-city">city</label>
-								<input type="text" id="admin-shop-city" class="input">
+								<input type="text" id="admin-shop-city" name="admin-shop-city" class="input">
 								
 								<label for="admin-shop-country">country</label>
-								<input type="text" id="admin-shop-country" class="input" value="finland">
+								<input type="text" id="admin-shop-country" name="admin-shop-country" class="input" value="finland">
 								
-								<label for="admin-shop-coords">coords</label>
-								<input type="text" id="admin-shop-coords" class="input">
+								<fieldset>
+									<legend>Coordinates</legend>
+									<label for="admin-shop-coord-lat">lattitude</label>
+									<input type="text" id="admin-shop-coord-lat" name="admin-shop-coord-lat" class="input">
+									
+									<label for="admin-shop-coord-long">longitude</label>
+									<input type="text" id="admin-shop-coord-long" name="admin-shop-coord-long" class="input">
+									
+								</fieldset>
+								
+								<input type="hidden" value="1" name="subaddshop">
+								<button class="btn btn-primary" type="submit">Add Shop</button>
 							</form>
 						</div>
 						

@@ -215,6 +215,7 @@ class Process
 			if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Executing header() redirection to ".$session->referrer."</p>\n";}
 			//header("Location: ".$session->referrer);
 		}
+		header("Location: index.php");
 	}
 	 
 	/**
@@ -569,14 +570,29 @@ class Process
 	function procAddShop()
 	{
 		global $product_functions;
-		$retval=$product_functions->newStore($_POST['city'], $_POST['location'], $_POST['chainID']);
-		if(!$retval)
+		
+		/*
+		 * Input validation (returns formatted error message)
+		 */
+		if(empty($_POST['admin-shop-location']))
 		{
-			echo "Failed to add store.";
+			echo "<div class=\"alert alert-info\">location not entered</div>";
+		}
+		elseif(empty($_POST['admin-shop-city']))
+		{
+			echo "<div class=\"alert alert-info\">city not entered</div>";
 		}
 		else
 		{
-			echo "Success! New store added at ".$_POST['location'].", ".$_POST['city'];
+			$retval = $product_functions->newStore($_POST['admin-shop-location'], $_POST['admin-shop-address'], $_POST['chainID'], $_POST['admin-shop-city'], $_POST['admin-shop-country'], $_POST['admin-shop-coord-lat'], $_POST['admin-shop-coord-long']);
+			if(!$retval)
+			{
+				echo "<div class=\"alert\">Failed to add store</div>";
+			}
+			else
+			{
+				echo "<div class=\"alert alert-success\">Success! New store added at ".$_POST['location'].", ".$_POST['city'] . "</div>";
+			}
 		}
 		
 	}

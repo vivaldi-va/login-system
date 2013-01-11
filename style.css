@@ -452,6 +452,8 @@ width: 100%;
 
 .list-item > footer .product-pic
 {
+	max-width: 128px;
+	max-height: 128px;
 	margin: 0 1em 0 0;
 }
 
@@ -648,11 +650,25 @@ width: 100%;
 	margin: 0 0 3.2rem;
 }
 
+.sorted-list > *
+{
+	padding-left: 1em;
+	padding-right: 1em;
+	
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+	
+	
+}
+
 .sorted-list-item 
 {
+	position: relative;
     padding: 0.5em 0;
     border-bottom: 1px solid #DFDFDF;
     text-transform: capitalize;
+    height: 57px;
 }
 
 .sorted-list-item:nth-of-type(2n+1) 
@@ -665,16 +681,102 @@ width: 100%;
     border-top: 1px solid #DFDFDF;
 }
 
+.sorted-list-item .price-info {
+    position: absolute;
+    right: 57px;
+    top: 0;
+    width: 160px;
+    line-height: 57px;
+}
+
+.sorted-list-item small
+{
+	font-weight: 700;
+}
+
+.sorted-list-item .checkout-button
+{
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 57px;
+	height: 57px;
+	
+	text-indent: -9001px;
+	background: url(img/checkout-icon-sprite.png) no-repeat 0 0;
+}
+
+.sorted-list-item .checkout-button.checked-out
+{
+	background-position: 0 -57px;
+}
+
+
+.sorted-list > footer 
+{
+    font-weight: 600;
+    height: 40px;
+    line-height: 40px;
+    text-transform: capitalize;
+}
+
 .total-saved 
 {
+	display:inline-block;
+	width: 100%;
     margin: 1em 0 0;
     padding: 0.5em 0 0.5em 1em;
     background: none repeat scroll 0 0 #22599B;
     color: #FFFFFF;
     font-size: 1.25em;
     text-transform: capitalize;
+    
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
 }
 
+
+.prisma
+{
+	background: #EEF6E8;
+}
+
+.prisma .sorted-list-item:nth-of-type(2n+1) 
+{
+	background: #E2EFDA;
+}
+
+.sorted-list.prisma > footer 
+{
+    background: #C8E3BB;
+}
+
+
+.kmarket
+{
+	background: #FCE2E3;
+}
+
+.kmarket .sorted-list-item:nth-of-type(2n+1) 
+{
+	background: #FAC8CB;
+}
+
+.kmarket > footer 
+{
+    background: #F6A0A6;
+}
+
+
+
+.sum-total 
+{
+    color: #22599B;
+    font-size: 1.2em;
+    font-weight: 600;
+    text-transform: capitalize;
+}
 
 
 .toolbar
@@ -998,6 +1100,7 @@ width: 100%;
 
 
 
+
 /* ==|== footer ============================================================= */
 
 
@@ -1060,6 +1163,12 @@ width: 100%;
 }
 @media only screen and (min-width: 768px) and (min-height: 480px)
 {
+	
+	body
+	{
+		padding: 0;
+	}
+	
 /* GRID */
 	.row-fluid 
 	{

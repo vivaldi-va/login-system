@@ -17,7 +17,7 @@
   <meta http-equiv="Content-type" content="text/html; charset=utf-8"><!-- ISO-8859-1 -->
  <!-- <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> --> 
 
-  <title>Ostos Nero | <?php echo $pageName?></title>
+  <title>OstosNero | <?php echo $pageName?></title>
   <meta name="description" content="">
   <meta name="author" content="">
 
@@ -28,6 +28,7 @@
   <link rel="stylesheet" href="./css/bootstrap.css">
   <link rel="stylesheet" href="./css/bootstrap-responsive.css"> 
   <link rel="stylesheet" href= "./style.css">
+  <?php if(!$session->logged_in){?><link rel="stylesheet" href= "./login-screen.css"><?php } ?>
   <link rel="stylesheet" href="chosen/chosen.css" />
   <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700italic,400italic,700,600,300,600italic' rel='stylesheet' type='text/css'>
   <!-- end CSS-->
@@ -37,6 +38,10 @@
 
 <body>
 
+	<!-- Login Form -->
+	<?php 
+	if($session->logged_in)
+	{?>
 	<div class="wrapper">
 		<div class="navbar">
 			<div class="navbar-inner">
@@ -44,7 +49,7 @@
 				 
 					 
 					<!-- Be sure to leave the brand out there if you want it shown -->
-					<a class="brand" id="home-link" href="index.php">Ostos Nero</a>
+					<a class="brand" id="home-link" href="index.php">OstosNero</a>
 					
 					   <?php if(!$session->logged_in){?>
 					    <ul class="nav">
@@ -58,10 +63,7 @@
 						
 						<a href="register.php" class="btn btn-primary pull-right">Join Now</a>
 						<?php }?>
-						<!-- Login Form -->
-						<?php 
-						if($session->logged_in)
-						{?>
+						
 						<div class="btn-group pull-right login-form">
 							<!-- <button class="btn">User Name</button> -->
 							<button class="btn dropdown-toggle" data-toggle="dropdown">
@@ -87,48 +89,10 @@
 								</ul>
 							</div>
 						</div>
-						<?php }else{?>
-						<div class="btn-group pull-right login-form">
-							<!-- <button class="btn">User Name</button> -->
-							<button class="btn dropdown-toggle" data-toggle="dropdown">
-								Login
-								<span class="caret"></span>
-							</button>
-							<div class="login-dropdown-form mobile-show-dropdown">
-								<form class="navbar-form form-horizontal pull-right login-form">
-									<div class="control-group">
-										<label class="control-label" for="login-email">email</label>
-										<div class="controls">
-											<input class="input login-email" name="login-email" type="email" value="<?php echo $form->value("email"); ?>" placeholder="example@ostosnero.com">
-										</div>
-									</div>
-									<div class="control-group">
-										<label class="control-label" for="login-pass">password</label>
-										<div class="controls">
-											<input class="input login-pass" name="login-pass" type="password" value="<?php echo $form->value("pass"); ?>" placeholder="password">
-										</div>
-									</div>
-									<div class="control-group">
-										<div class="controls">
-											<label class="checkbox">
-												<input class="login-remember" type="checkbox" <?php if($form->value("remember") != ""){ echo "checked"; } ?>>remember me
-											</label>
-										</div>
-									</div>
-									<div class="control-group">
-										<div class="controls">
-											<button type="submit" class="btn btn-info">Sign In</button>
-										</div>
-									</div>
-									<input type="hidden" class="form-token" value="<?php echo $_SESSION['form-token'];?>">
-								</form>
-							</div><!-- .dropdown-menu -->
-						</div><!-- .btn-group -->
-						<?php }?>
 						
 				</div><!-- .container -->
 			</div><!-- .navbar-inner -->
 		</div><!-- .navbar -->
 	</div>	<!-- .wrapper -->
-	
+	<?php }?>
 	<!-- /header -->

@@ -2404,8 +2404,10 @@ GROUP BY prices.id";
 	 * @param float $long
 	 * @return boolean
 	 */
-	function addNewShop($userID, $city, $location, $chainID, $address = "", $country = "finland", $lat = 0.00, $long = 0.00)
+	function addNewShop($userID, $location, $address = "", $chainID, $city, $country = "finland", $lat = 0.00, $long = 0.00)
 	{
+		
+		// addNewShop($session->userid, $location, $address, $chainID, $city, $country, $coords)
 		$q = "INSERT INTO 
 				shops 
 				(id, created, name, chainID, latitude, longitude, userID, address, city, country)
@@ -2519,6 +2521,38 @@ GROUP BY prices.id";
 		}
 		return mysql_num_rows($result);
 	}
+	
+	function getChains()
+	{
+		$query = "SELECT " . TBL_CHAINS . ".id AS chainID, " . TBL_CHAINS . ".name AS chainName
+				FROM "  . TBL_CHAINS . " WHERE 1";
+		if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>Querying chains: <code>$query</code></p>\n";}
+		$result = mysql_query($query);
+		if(!$result)
+		{
+			if(DEBUG_MODE){
+				$_SESSION['debug_info'] .= "<p>Query failed: <code>" . mysql_error() . "</code></p>\n";
+			}
+			return false;
+		}
+		
+		$chainArray = array();
+		
+		while($dbArray = mysql_fetch_assoc($result))
+		{
+			$chainArray[$dbArray['chainID']] = $dbArray['chainName']; 
+		}
+		
+		
+		if(DEBUG_MODE)
+		{
+			$dumpString = $this->dumpArray($chainArray);
+			$_SESSION['debug_info'] .= "<p>savings prices array: <br> $dumpString</p>\n";
+		}
+		return $chainArray;
+		
+	}
+	
 	
 	
 	function dumpArray($array)

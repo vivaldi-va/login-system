@@ -435,7 +435,7 @@
 		 * @param int $chainID
 		 * @return boolean
 		 */
-		function newStore($city, $location, $chainID)
+		function newStore($location, $address, $chainID, $city, $country = "finland", $coords = null)
 		{
 			global $database;
 			global $session;
@@ -470,6 +470,7 @@
 				return false;
 			}
 			
+			
 			//Chain ID
 			if($chainID < 0 || $chainID == null)
 			{
@@ -477,8 +478,9 @@
 				return false;
 			}			
 			
-			if(!$retval = $database->addNewShop($session->userid, $city, $location, $chainID))
+			if(!$retval = $database->addNewShop($session->userid, $location, $address, $chainID, $city, $country, $coord_lat, $coord_long))
 			{
+				if(DEBUG_MODE){$_SESSION['debug_info'] .= "<p>adding shop failed @ product_functions.php</p>\n";}
 				return false;
 			}
 			
@@ -658,15 +660,30 @@
 		 */
 		function formatPriceValue($price)
 		{
-			$formattedPrice = str_replace('.', ',', strval($price));
-			return $formattedPrice;
+			//$formattedPrice = str_replace('.', ',', strval($price));
+			if(preg_match("/^[0-9]+$/", $price))
+			{
+				$price .= ",00";
+			}
+			elseif(preg_match("/^[0-9]+\.[0-9]$/", $price))
+			{
+				$price .= "0";
+			}
+			//$formattedPrice = money_format("!%.2n", $price);
+			$price = str_replace('.', ',', strval($price));
+			return $price;
 		}
 		
 		
-		
-		function calcListTotals($listArray)
+		/**
+		 * Returns an array with all the chains and their id's from the database.
+		 * 
+		 * @return Ambigous <boolean, multitype:Ambigous <> >
+		 */
+		function chainList()
 		{
-			
+			global $database;
+			return $database->getChains();
 		}
 		
 	};
